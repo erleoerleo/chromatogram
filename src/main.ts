@@ -38,6 +38,7 @@ const el = {
   width: $<HTMLInputElement>('width'),
   height: $<HTMLInputElement>('height'),
   exportBtn: $<HTMLButtonElement>('export'),
+  exportPngBtn: $<HTMLButtonElement>('export-png'),
   plot: $<HTMLDivElement>('plot'),
   messages: $<HTMLDivElement>('messages'),
   meta: $<HTMLDListElement>('meta'),
@@ -149,7 +150,7 @@ function readOptions(trace: { chrom: Chromatogram; label: string }): PlotOptions
 
 function render(): void {
   const trace = currentTrace();
-  el.exportBtn.disabled = !trace;
+  el.exportBtn.disabled = el.exportPngBtn.disabled = !trace;
   if (!trace) {
     state.svg = '';
     el.plot.className = 'empty';
@@ -193,20 +194,65 @@ function render(): void {
   ]);
 }
 
-function exportSvg(): void {
-  if (!state.svg) return;
+function exportBaseName(): string {
   const base = (el.title.value.trim() || state.dataName.replace(/\.[^.]+$/, '') || 'chromatogram')
     .replace(/[^\w.-]+/g, '_')
     .replace(/^_+|_+$/g, '');
-  const blob = new Blob([`<?xml version="1.0" encoding="UTF-8"?>\n${state.svg}\n`], { type: 'image/svg+xml' });
+  return base || 'chromatogram';
+}
+
+function download(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${base || 'chromatogram'}.svg`;
+  a.download = filename;
   document.body.append(a);
   a.click();
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function svgBlob(): Blob {
+  return new Blob([`<?xml version="1.0" encoding="UTF-8"?>\n${state.svg}\n`], { type: 'image/svg+xml' });
+}
+
+function exportSvg(): void {
+  if (!state.svg) return;
+  download(svgBlob(), `${exportBaseName()}.svg`);
+}
+
+const PNG_SCALE = 2;
+// Stay well inside browser canvas limits (max side ~32k, area ~268M px in Chromium; less elsewhere).
+const PNG_MAX_SIDE = 16384;
+const PNG_MAX_AREA = 64e6;
+
+async function exportPng(): Promise<void> {
+  if (!state.svg) return;
+  const name = `${exportBaseName()}.png`;
+  const url = URL.createObjectURL(svgBlob());
+  try {
+    const img = new Image();
+    img.src = url;
+    await img.decode();
+    const w = img.naturalWidth;
+    const h = img.naturalHeight;
+    const scale = Math.min(PNG_SCALE, PNG_MAX_SIDE / Math.max(w, h), Math.sqrt(PNG_MAX_AREA / (w * h)));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(w * scale);
+    canvas.height = Math.round(h * scale);
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('Canvas 2D context unavailable');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const png = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+    if (!png) throw new Error('PNG encoding failed');
+    download(png, name);
+  } catch (err) {
+    showMessages([{ kind: 'error', text: `Could not export PNG: ${err instanceof Error ? err.message : String(err)}` }]);
+  } finally {
+    URL.revokeObjectURL(url);
+  }
 }
 
 // ── UI helpers ─────────────────────────────────────────────────────────────────
@@ -291,6 +337,7 @@ for (const input of [
   input.addEventListener(input.type === 'checkbox' ? 'change' : 'input', render);
 }
 el.exportBtn.addEventListener('click', exportSvg);
+el.exportPngBtn.addEventListener('click', () => void exportPng());
 document.querySelectorAll<HTMLButtonElement>('[data-example]').forEach((b) =>
   b.addEventListener('click', () => void loadExample(b.dataset.example!)),
 );

@@ -121,6 +121,15 @@ button.primary {
   font-weight: 600;
 }
 
+.export-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.export-buttons button {
+  flex: 1;
+}
+
 button:disabled {
   opacity: 0.5;
   cursor: default;
