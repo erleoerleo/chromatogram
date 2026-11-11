@@ -1,5 +1,5 @@
-import type { MsFile, MsScan } from '../model';
-import { pascalString, toBytes, viewOf } from './binary';
+import type { MsFile, MsScan } from '../model.js';
+import { pascalString, toBytes, viewOf } from './binary.js';
 
 /*
  * Agilent ChemStation MSD files (.ms), version "2". All integers are big-endian.

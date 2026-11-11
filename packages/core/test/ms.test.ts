@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { parseMs } from '../src/parsers/ms';
-import { filterPeaks, parseIonList, sumIons, totalIonChromatogram } from '../src/model';
-import { fixture } from './helpers';
+import { parseMs } from '../src/parsers/ms.js';
+import { filterPeaks, parseIonList, sumIons, totalIonChromatogram } from '../src/model.js';
+import { fixture } from './helpers.js';
 
 function abundanceNear(scan: { mz: Float64Array; abundance: Float64Array }, mz: number): number {
   let s = 0;

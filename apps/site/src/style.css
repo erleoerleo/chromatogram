@@ -167,7 +167,7 @@ button:disabled {
   height: auto;
 }
 
-body.dragging #plot {
+#plot.dragging {
   outline: 3px dashed var(--accent);
 }
 

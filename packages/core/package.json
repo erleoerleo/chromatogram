@@ -1,0 +1,48 @@
+{
+  "name": "@erleoerleo/chromatogram-core",
+  "version": "0.1.0",
+  "description": "Parse Agilent ChemStation chromatograms (.ch, .ms) and .prc peak label files, and render them to SVG/PNG in the browser or Node. No dependencies.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "prepack": "npm run build"
+  },
+  "keywords": [
+    "chromatogram",
+    "chemstation",
+    "agilent",
+    "gc",
+    "gc-ms",
+    "fid",
+    "svg"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erleoerleo/chromatogram.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/erleoerleo/chromatogram/tree/main/packages/core#readme",
+  "bugs": "https://github.com/erleoerleo/chromatogram/issues",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

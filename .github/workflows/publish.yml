@@ -1,0 +1,47 @@
+name: Publish packages to npm
+
+# Push a tag such as v0.1.0 after bumping both package versions to publish them.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+  id-token: write # npm provenance
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm test
+      - run: npm run build:packages
+
+      - name: Check the tag matches the package versions
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          for p in packages/core packages/react; do
+            v=$(node -p "require('./$p/package.json').version")
+            if [ "$v" != "$tag" ]; then echo "::error::$p is $v but the tag is v$tag"; exit 1; fi
+          done
+
+      # Core first: the React package depends on it. Versions already on npm are skipped.
+      - name: Publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          for p in packages/core packages/react; do
+            name=$(node -p "require('./$p/package.json').name")
+            version=$(node -p "require('./$p/package.json').version")
+            if npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "$name@$version is already published, skipping"
+            else
+              npm publish -w "$p" --provenance --access public
+            fi
+          done

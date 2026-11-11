@@ -1,6 +1,6 @@
-import type { Chromatogram, Peak } from '../model';
-import { indexAtOrAfter, indexAtOrBefore } from '../model';
-import { axisFactor, formatTick, linearScale, niceStep, ticks, type LinearScale } from './scale';
+import type { Chromatogram, Peak } from '../model.js';
+import { indexAtOrAfter, indexAtOrBefore } from '../model.js';
+import { axisFactor, formatTick, linearScale, niceStep, ticks, type LinearScale } from './scale.js';
 
 export interface PlotOptions {
   /** Window start in minutes; null = start of data. */

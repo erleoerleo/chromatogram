@@ -1,0 +1,62 @@
+{
+  "name": "@erleoerleo/chromatogram-react",
+  "version": "0.1.0",
+  "description": "React component that renders Agilent ChemStation chromatograms (.ch, .ms) with .prc peak labels, with SVG and PNG export.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "@erleoerleo/chromatogram-core": "^0.1.0"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "keywords": [
+    "react",
+    "chromatogram",
+    "chemstation",
+    "agilent",
+    "gc",
+    "gc-ms",
+    "svg"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erleoerleo/chromatogram.git",
+    "directory": "packages/react"
+  },
+  "homepage": "https://github.com/erleoerleo/chromatogram/tree/main/packages/react#readme",
+  "bugs": "https://github.com/erleoerleo/chromatogram/issues",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.3.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "jsdom": "^31.0.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  }
+}

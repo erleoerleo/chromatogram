@@ -1,5 +1,5 @@
-import type { ChFile } from '../model';
-import { pascalString, toBytes, viewOf, widePascalString } from './binary';
+import type { ChFile } from '../model.js';
+import { pascalString, toBytes, viewOf, widePascalString } from './binary.js';
 
 /*
  * Agilent ChemStation signal files (.ch).

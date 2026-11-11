@@ -1,26 +1,45 @@
 # Chromatogram viewer
 
-A static web page for viewing Agilent ChemStation chromatograms. Load a `.ch` (FID/detector
-signal) or `.ms` (GC/MS) file and, if you have one, a `.prc` peak label file. The page draws the
-chromatogram with peak labels. **Export SVG** downloads the plot as a vector image, and
-**Export PNG** downloads it as a raster image.
-
-Everything runs in the browser (TypeScript + Vite). There is no backend, and files never
+View Agilent ChemStation chromatograms in the browser. Load a `.ch` (FID/detector signal) or
+`.ms` (GC/MS) file and, if you have one, a `.prc` peak label file. The chromatogram is drawn
+with peak labels and can be exported as SVG or PNG. Everything runs in the browser; files never
 leave your machine.
+
+**[Open the viewer](https://erleoerleo.github.io/chromatogram/)**
+
+The code is split into reusable npm packages plus the demo site:
+
+| Path | Package | |
+| --- | --- | --- |
+| `packages/core` | [`@erleoerleo/chromatogram-core`](packages/core/README.md) | Parsers, trace selection, SVG renderer, SVG/PNG export helpers. No dependencies, no framework. |
+| `packages/react` | [`@erleoerleo/chromatogram-react`](packages/react/README.md) | `<Chromatogram data={…} labels={…} />` component with a ref for SVG/PNG export. |
+| `apps/site` | (private) | The viewer page, built with the React component and deployed to GitHub Pages. |
+
+Using the component in another React project:
+
+```tsx
+import { Chromatogram } from '@erleoerleo/chromatogram-react';
+
+<Chromatogram data="/data/fid1a.ch" labels="/data/fid1a.prc" timeRange={[5, 105]} />;
+```
 
 ## Getting started
 
-Requires Node.js 20 or later.
+Requires Node.js 20 or later. This is an npm workspaces repo; run everything from the root.
 
 ```sh
-npm install      # install dependencies
-npm run dev      # start the dev server (http://localhost:5173)
-npm run build    # type-check and build the static site into dist/
-npm run preview  # serve the production build locally
-npm test         # run the unit tests (Vitest)
+npm install      # install dependencies for all workspaces
+npm run dev      # build the packages, then start the site dev server (http://localhost:5173)
+npm run build    # build both packages and the site (apps/site/dist)
+npm run preview  # serve the production site locally
+npm test         # run the core and React tests (Vitest)
+npm run typecheck
 ```
 
-To try it without your own data, click **FID** or **MS** under *Examples*, or open
+`npm run dev` serves the packages from their `dist/` builds. After changing a package, run
+`npm run build:packages` (the dev server picks up the new build).
+
+To try the viewer without your own data, click **FID** or **MS** under *Examples*, or open
 `/?example=fid` or `/?example=ms`.
 
 ## Using the viewer
@@ -53,18 +72,34 @@ an independent TypeScript implementation.
 ## Project layout
 
 ```
-src/parsers/   ch.ts, ms.ts, prc.ts – binary/text parsers
-src/model.ts   data types, TIC/EIC extraction, peak filtering
-src/render/    svg.ts (SVG plot builder, label layout), scale.ts (ticks, scales)
-src/main.ts    page wiring
-public/samples example data used by the Examples buttons
-tests/         Vitest suites; tests/fixtures holds sample files
+packages/core/src/parsers/   ch.ts, ms.ts, prc.ts – binary/text parsers
+packages/core/src/model.ts   data types, TIC/EIC extraction, peak filtering
+packages/core/src/render/    svg.ts (SVG plot builder, label layout), scale.ts (ticks, scales)
+packages/core/src/plot.ts    format detection and plotChromatogram()
+packages/core/src/export.ts  SVG/PNG blobs and downloads
+packages/core/test/          Vitest suites; test/fixtures holds sample files
+packages/react/src/          <Chromatogram> component
+packages/react/test/         component tests (Testing Library + jsdom)
+apps/site/                   the viewer page; public/samples has the example data
 ```
 
 ## Deploying to GitHub Pages
 
-The build is a plain static site. `vite.config.ts` uses `base: './'`, so `dist/` works from any
-sub-path, such as `https://<user>.github.io/<repo>/`.
+The site is plain static files. `apps/site/vite.config.ts` uses `base: './'`, so the build
+works from any sub-path, such as `https://<user>.github.io/<repo>/`.
 
-`.github/workflows/deploy.yml` builds and publishes the site on every push to `main`. To turn it
-on, go to the repository's **Settings → Pages → Source** and select **GitHub Actions**.
+`.github/workflows/deploy.yml` tests, builds and publishes the site on every push to `main`.
+Pages must be set to **Settings → Pages → Source: GitHub Actions**.
+
+## Publishing the packages to npm
+
+`.github/workflows/publish.yml` publishes both packages when you push a `v*` tag. It uses
+`npm publish --provenance --access public` and skips versions that are already on npm.
+
+1. Add an npm automation token as the repository secret `NPM_TOKEN`. It needs publish rights to
+   the `@erleoerleo` scope, so an npm user or organisation called `erleoerleo` must exist.
+2. Set the same version in `packages/core/package.json` and `packages/react/package.json`, and
+   update the React package's dependency on core if needed, then run `npm install`.
+3. Commit, then `git tag v0.1.0 && git push --tags`.
+
+`npm pack --dry-run -w @erleoerleo/chromatogram-react` shows what would be published.

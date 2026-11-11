@@ -1,4 +1,4 @@
-import type { Peak, PrcFile } from '../model';
+import type { Peak, PrcFile } from '../model.js';
 
 /*
  * ChemStation .prc peak/label files (plain text, comma separated):

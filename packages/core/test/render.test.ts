@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { parseCh } from '../src/parsers/ch';
-import { parseMs } from '../src/parsers/ms';
-import { decodePrc } from '../src/parsers/prc';
-import { filterPeaks, sumIons } from '../src/model';
-import { renderSvg } from '../src/render/svg';
-import { formatTick, niceStep, ticks } from '../src/render/scale';
-import { fixture } from './helpers';
+import { parseCh } from '../src/parsers/ch.js';
+import { parseMs } from '../src/parsers/ms.js';
+import { decodePrc } from '../src/parsers/prc.js';
+import { filterPeaks, sumIons } from '../src/model.js';
+import { renderSvg } from '../src/render/svg.js';
+import { formatTick, niceStep, ticks } from '../src/render/scale.js';
+import { fixture } from './helpers.js';
 
 describe('scale helpers', () => {
   it('picks nice steps', () => {

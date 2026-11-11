@@ -1,13 +1,19 @@
 {
-  "name": "chromatogram-viewer",
+  "name": "chromatogram-monorepo",
   "private": true,
-  "version": "0.1.0",
   "type": "module",
+  "workspaces": [
+    "packages/core",
+    "packages/react",
+    "apps/site"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "tsc --noEmit && vite build",
-    "preview": "vite preview",
-    "test": "vitest run"
+    "build:packages": "npm run build -w @erleoerleo/chromatogram-core -w @erleoerleo/chromatogram-react",
+    "build": "npm run build:packages && npm run build -w chromatogram-site",
+    "dev": "npm run build:packages && npm run dev -w chromatogram-site",
+    "preview": "npm run preview -w chromatogram-site",
+    "test": "npm run build -w @erleoerleo/chromatogram-core && npm test --workspaces --if-present",
+    "typecheck": "npm run build:packages && npm run typecheck --workspaces --if-present"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { parseCh } from '../src/parsers/ch';
-import { fixture } from './helpers';
+import { parseCh } from '../src/parsers/ch.js';
+import { fixture } from './helpers.js';
 
 function median(a: Float64Array): number {
   const s = Array.from(a).sort((x, y) => x - y);

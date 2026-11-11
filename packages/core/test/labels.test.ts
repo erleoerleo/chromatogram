@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import type { Peak } from '../src/model';
-import { layoutLabels } from '../src/render/svg';
-import { linearScale } from '../src/render/scale';
+import type { Peak } from '../src/model.js';
+import { layoutLabels } from '../src/render/svg.js';
+import { linearScale } from '../src/render/scale.js';
 
 describe('layoutLabels', () => {
   it('stacks labels that would overlap and leaves distant ones alone', () => {

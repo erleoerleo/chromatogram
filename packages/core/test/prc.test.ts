@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { decodePrc, parsePrc } from '../src/parsers/prc';
-import { fixture } from './helpers';
+import { decodePrc, parsePrc } from '../src/parsers/prc.js';
+import { fixture } from './helpers.js';
 
 describe('parsePrc', () => {
   it('parses fid1a.prc', () => {
