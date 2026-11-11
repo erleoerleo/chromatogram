@@ -1,14 +1,14 @@
-# @erleoerleo/chromatogram-react
+# chromatogram-react
 
 A React component that draws Agilent ChemStation chromatograms (`.ch` FID/detector files and
 `.ms` GC/MS files) with peak labels from a `.prc` file, and exports the plot as SVG or PNG.
 Parsing and rendering happen in the browser; nothing is uploaded.
 
 [Live demo](https://erleoerleo.github.io/chromatogram/) · built on
-[`@erleoerleo/chromatogram-core`](https://www.npmjs.com/package/@erleoerleo/chromatogram-core)
+[`chromatogram-core`](https://www.npmjs.com/package/chromatogram-core)
 
 ```sh
-npm install @erleoerleo/chromatogram-react
+npm install chromatogram-react
 ```
 
 Requires React 18 or later. The package is ESM with TypeScript types and works in Vite,
@@ -20,7 +20,7 @@ Pass the files as URLs, `File`/`Blob` objects (for example from an `<input type=
 or `ArrayBuffer`/`Uint8Array` bytes:
 
 ```tsx
-import { Chromatogram } from '@erleoerleo/chromatogram-react';
+import { Chromatogram } from 'chromatogram-react';
 
 export function Sample() {
   return <Chromatogram data="/data/fid1a.ch" labels="/data/fid1a.prc" timeRange={[5, 105]} />;
@@ -44,7 +44,7 @@ Use a ref to export what is currently shown:
 
 ```tsx
 import { useRef } from 'react';
-import { Chromatogram, type ChromatogramHandle } from '@erleoerleo/chromatogram-react';
+import { Chromatogram, type ChromatogramHandle } from 'chromatogram-react';
 
 export function Viewer({ file }: { file: File }) {
   const plot = useRef<ChromatogramHandle>(null);

@@ -5,7 +5,7 @@ import {
   type ChromatogramHandle,
   type ChromatogramResult,
   type FileSource,
-} from '@erleoerleo/chromatogram-react';
+} from 'chromatogram-react';
 import './style.css';
 
 const EXAMPLES: Record<string, { data: string; prc: string; start: number; end: number; ions: string }> = {

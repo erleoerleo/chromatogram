@@ -8,11 +8,11 @@
     "apps/site"
   ],
   "scripts": {
-    "build:packages": "npm run build -w @erleoerleo/chromatogram-core -w @erleoerleo/chromatogram-react",
+    "build:packages": "npm run build -w chromatogram-core -w chromatogram-react",
     "build": "npm run build:packages && npm run build -w chromatogram-site",
     "dev": "npm run build:packages && npm run dev -w chromatogram-site",
     "preview": "npm run preview -w chromatogram-site",
-    "test": "npm run build -w @erleoerleo/chromatogram-core && npm test --workspaces --if-present",
+    "test": "npm run build -w chromatogram-core && npm test --workspaces --if-present",
     "typecheck": "npm run build:packages && npm run typecheck --workspaces --if-present"
   },
   "devDependencies": {

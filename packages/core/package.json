@@ -1,5 +1,5 @@
 {
-  "name": "@erleoerleo/chromatogram-core",
+  "name": "chromatogram-core",
   "version": "0.1.0",
   "description": "Parse Agilent ChemStation chromatograms (.ch, .ms) and .prc peak label files, and render them to SVG/PNG in the browser or Node. No dependencies.",
   "license": "MIT",

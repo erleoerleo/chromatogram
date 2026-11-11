@@ -1,5 +1,5 @@
 {
-  "name": "@erleoerleo/chromatogram-react",
+  "name": "chromatogram-react",
   "version": "0.1.0",
   "description": "React component that renders Agilent ChemStation chromatograms (.ch, .ms) with .prc peak labels, with SVG and PNG export.",
   "license": "MIT",
@@ -26,7 +26,7 @@
     "prepack": "npm run build"
   },
   "dependencies": {
-    "@erleoerleo/chromatogram-core": "^0.1.0"
+    "chromatogram-core": "^0.1.0"
   },
   "peerDependencies": {
     "react": ">=18"

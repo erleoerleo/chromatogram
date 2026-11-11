@@ -5,4 +5,4 @@ export {
   type ChromatogramResult,
   type FileSource,
 } from './Chromatogram.js';
-export type { DataFile, PlotOptions, PngOptions, PrcFile } from '@erleoerleo/chromatogram-core';
+export type { DataFile, PlotOptions, PngOptions, PrcFile } from 'chromatogram-core';

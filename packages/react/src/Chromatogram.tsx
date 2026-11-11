@@ -23,7 +23,7 @@ import {
   type PlotRequest,
   type PngOptions,
   type PrcFile,
-} from '@erleoerleo/chromatogram-core';
+} from 'chromatogram-core';
 
 /** File contents (ArrayBuffer, Uint8Array, Blob/File) or a URL to fetch them from. */
 export type FileSource = ArrayBuffer | Uint8Array | Blob | string | URL;

@@ -11,14 +11,14 @@ The code is split into reusable npm packages plus the demo site:
 
 | Path | Package | |
 | --- | --- | --- |
-| `packages/core` | [`@erleoerleo/chromatogram-core`](packages/core/README.md) | Parsers, trace selection, SVG renderer, SVG/PNG export helpers. No dependencies, no framework. |
-| `packages/react` | [`@erleoerleo/chromatogram-react`](packages/react/README.md) | `<Chromatogram data={…} labels={…} />` component with a ref for SVG/PNG export. |
+| `packages/core` | [`chromatogram-core`](packages/core/README.md) | Parsers, trace selection, SVG renderer, SVG/PNG export helpers. No dependencies, no framework. |
+| `packages/react` | [`chromatogram-react`](packages/react/README.md) | `<Chromatogram data={…} labels={…} />` component with a ref for SVG/PNG export. |
 | `apps/site` | (private) | The viewer page, built with the React component and deployed to GitHub Pages. |
 
 Using the component in another React project:
 
 ```tsx
-import { Chromatogram } from '@erleoerleo/chromatogram-react';
+import { Chromatogram } from 'chromatogram-react';
 
 <Chromatogram data="/data/fid1a.ch" labels="/data/fid1a.prc" timeRange={[5, 105]} />;
 ```
@@ -96,10 +96,10 @@ Pages must be set to **Settings → Pages → Source: GitHub Actions**.
 `.github/workflows/publish.yml` publishes both packages when you push a `v*` tag. It uses
 `npm publish --provenance --access public` and skips versions that are already on npm.
 
-1. Add an npm automation token as the repository secret `NPM_TOKEN`. It needs publish rights to
-   the `@erleoerleo` scope, so an npm user or organisation called `erleoerleo` must exist.
+1. Add an npm automation token from the npm account that will own `chromatogram-core` and
+   `chromatogram-react` as the repository secret `NPM_TOKEN`.
 2. Set the same version in `packages/core/package.json` and `packages/react/package.json`, and
    update the React package's dependency on core if needed, then run `npm install`.
 3. Commit, then `git tag v0.1.0 && git push --tags`.
 
-`npm pack --dry-run -w @erleoerleo/chromatogram-react` shows what would be published.
+`npm pack --dry-run -w chromatogram-react` shows what would be published.

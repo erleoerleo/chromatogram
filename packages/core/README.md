@@ -1,20 +1,20 @@
-# @erleoerleo/chromatogram-core
+# chromatogram-core
 
 Framework-free TypeScript for Agilent ChemStation chromatograms: parsers for `.ch`
 (FID/detector) and `.ms` (GC/MS) files and `.prc` peak label files, plus a renderer that turns
 them into a labelled SVG plot. No dependencies. Parsing and SVG rendering work in browsers and
 Node; PNG export and downloads need a browser.
 
-For React, use [`@erleoerleo/chromatogram-react`](https://www.npmjs.com/package/@erleoerleo/chromatogram-react).
+For React, use [`chromatogram-react`](https://www.npmjs.com/package/chromatogram-react).
 
 ```sh
-npm install @erleoerleo/chromatogram-core
+npm install chromatogram-core
 ```
 
 ## Usage
 
 ```ts
-import { decodePrc, parseDataFile, plotChromatogram } from '@erleoerleo/chromatogram-core';
+import { decodePrc, parseDataFile, plotChromatogram } from 'chromatogram-core';
 
 const data = new Uint8Array(await (await fetch('/data/fid1a.ch')).arrayBuffer());
 const labels = new Uint8Array(await (await fetch('/data/fid1a.prc')).arrayBuffer());
@@ -36,7 +36,7 @@ In Node:
 
 ```ts
 import { readFileSync, writeFileSync } from 'node:fs';
-import { parseDataFile, plotChromatogram } from '@erleoerleo/chromatogram-core';
+import { parseDataFile, plotChromatogram } from 'chromatogram-core';
 
 const plot = plotChromatogram(parseDataFile(readFileSync('data.ms')), null, { ions: '191' });
 writeFileSync('data-191.svg', plot.svg);
@@ -45,7 +45,7 @@ writeFileSync('data-191.svg', plot.svg);
 ### Export (browser)
 
 ```ts
-import { downloadBlob, safeFileName, svgToBlob, svgToPngBlob } from '@erleoerleo/chromatogram-core';
+import { downloadBlob, safeFileName, svgToBlob, svgToPngBlob } from 'chromatogram-core';
 
 downloadBlob(svgToBlob(plot.svg), `${safeFileName(file.sampleId)}.svg`);
 downloadBlob(await svgToPngBlob(plot.svg, { scale: 2, background: '#fff' }), 'plot.png');
