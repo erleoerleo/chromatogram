@@ -56,7 +56,7 @@ export function downloadBlob(blob: Blob, fileName: string): void {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-/** Turns a title or sample ID into a safe file name stem, e.g. "SAMPLE-1" → "SAMPLE-1". */
+/** Turns a title or sample ID into a safe file name stem, e.g. "Sample A/1, run 2" → "Sample_A_1_run_2". */
 export function safeFileName(name: string, fallback = 'chromatogram'): string {
   const stem = name
     .trim()

@@ -8,6 +8,7 @@
     "apps/site"
   ],
   "scripts": {
+    "generate:samples": "node scripts/generate-samples.mjs",
     "build:packages": "npm run build -w chromatogram-core -w chromatogram-react",
     "build": "npm run build:packages && npm run build -w chromatogram-site",
     "dev": "npm run build:packages && npm run dev -w chromatogram-site",

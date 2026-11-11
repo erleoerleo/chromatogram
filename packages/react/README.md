@@ -23,15 +23,15 @@ or `ArrayBuffer`/`Uint8Array` bytes:
 import { Chromatogram } from 'chromatogram-react';
 
 export function Sample() {
-  return <Chromatogram data="/data/fid1a.ch" labels="/data/fid1a.prc" timeRange={[5, 105]} />;
+  return <Chromatogram data="/data/synthetic-fid.ch" labels="/data/synthetic-fid.prc" timeRange={[2, 58]} />;
 }
 ```
 
 In a Vite app you can import the files as asset URLs:
 
 ```tsx
-import dataUrl from './samples/data.ms?url';
-import labelsUrl from './samples/data.prc?url';
+import dataUrl from './samples/synthetic.ms?url';
+import labelsUrl from './samples/synthetic-ms.prc?url';
 
 <Chromatogram data={dataUrl} labels={labelsUrl} ions="191" />;
 ```

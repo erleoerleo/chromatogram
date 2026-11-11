@@ -20,7 +20,7 @@ Using the component in another React project:
 ```tsx
 import { Chromatogram } from 'chromatogram-react';
 
-<Chromatogram data="/data/fid1a.ch" labels="/data/fid1a.prc" timeRange={[5, 105]} />;
+<Chromatogram data="/data/synthetic-fid.ch" labels="/data/synthetic-fid.prc" timeRange={[2, 58]} />;
 ```
 
 ## Getting started
@@ -66,8 +66,12 @@ lifted. The y-axis is extended so that every label fits.
 | `.ms` | ChemStation MSD files, version 2. These contain full-scan or SIM data. |
 | `.prc` | ChemStation peak/label exports. These are comma-separated text: a `SAMPLE_ID` line, a header line, then one row per peak. |
 
-The format knowledge came from studying an existing Java implementation. This is
-an independent TypeScript implementation.
+The format knowledge came from studying an existing Java implementation. This is an
+independent TypeScript implementation.
+
+The example and test files are synthetic: `node scripts/generate-samples.mjs` writes Gaussian
+peaks into `.ch` (v81 and v179), `.ms` and `.prc` files under `packages/core/test/fixtures` and
+`apps/site/public/samples`. Do not commit real sample data.
 
 ## Project layout
 

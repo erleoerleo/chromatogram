@@ -9,8 +9,8 @@ import {
 import './style.css';
 
 const EXAMPLES: Record<string, { data: string; prc: string; start: number; end: number; ions: string }> = {
-  fid: { data: 'fid1a.ch', prc: 'fid1a.prc', start: 5, end: 105, ions: '' },
-  ms: { data: 'data.ms', prc: 'data.prc', start: 40, end: 110, ions: '191' },
+  fid: { data: 'synthetic-fid.ch', prc: 'synthetic-fid.prc', start: 2, end: 58, ions: '' },
+  ms: { data: 'synthetic.ms', prc: 'synthetic-ms.prc', start: 45, end: 90, ions: '191' },
 };
 
 interface Source {

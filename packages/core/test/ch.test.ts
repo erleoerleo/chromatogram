@@ -2,10 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { parseCh } from '../src/parsers/ch.js';
 import { fixture } from './helpers.js';
 
-function median(a: Float64Array): number {
-  const s = Array.from(a).sort((x, y) => x - y);
-  return s[s.length >> 1];
-}
+// Fixtures come from scripts/generate-samples.mjs: Gaussian peaks on a baseline of 2 + 0.03·t.
 
 function assertAscending(times: Float64Array) {
   for (let i = 1; i < times.length; i++) {
@@ -13,47 +10,47 @@ function assertAscending(times: Float64Array) {
   }
 }
 
+function valueAt(c: { times: Float64Array; signal: Float64Array }, t: number): number {
+  let best = 0;
+  c.times.forEach((x, i) => {
+    if (Math.abs(x - t) < Math.abs(c.times[best] - t)) best = i;
+  });
+  return c.signal[best];
+}
+
 describe('parseCh', () => {
   it('parses a v81 legacy double-delta FID file', () => {
-    const c = parseCh(fixture('fid1a.ch'));
-    expect(c.version).toBe('81');
-    expect(c.unverified).toBe(false);
-    expect(c.sampleId).toBe('SAMPLE-1');
-    expect(c.operator).toBe('operator');
-    expect(c.times.length).toBe(104_402);
-    expect(c.signal.length).toBe(104_402);
-    expect(c.times[0]).toBeGreaterThanOrEqual(0);
-    expect(c.times[0]).toBeLessThan(0.01);
-    expect(c.times[c.times.length - 1]).toBeGreaterThan(170);
-    expect(c.times[c.times.length - 1]).toBeLessThan(180);
+    const c = parseCh(fixture('synthetic-fid.ch'));
+    expect(c).toMatchObject({
+      version: '81',
+      unverified: false,
+      sampleId: 'SYNTHETIC-FID-1',
+      operator: 'synthetic',
+      date: '01 Jan 2024  10:00:00',
+      instrument: 'Synthetic GC',
+      method: 'SYNTH.M',
+    });
+    // 0–60 min at 5 Hz.
+    expect(c.times.length).toBe(18_001);
+    expect(c.signal.length).toBe(18_001);
+    expect(c.times[0]).toBe(0);
+    expect(c.times[c.times.length - 1]).toBeCloseTo(60, 6);
     assertAscending(c.times);
-    const base = median(c.signal);
-    expect(base).toBeGreaterThan(1);
-    expect(base).toBeLessThan(10);
-    expect(Math.max(...c.signal)).toBeGreaterThan(500);
+    // Baseline before the first peak, solvent peak (900) and nC13 apex (155 above baseline).
+    expect(valueAt(c, 0.5)).toBeCloseTo(2.015, 0);
+    expect(Math.max(...c.signal)).toBeCloseTo(902, -1);
+    expect(valueAt(c, 19.1)).toBeCloseTo(155 + 2 + 0.03 * 19.1, -1);
   });
 
   it('parses a v179 modern float64 FID file', () => {
-    const c = parseCh(fixture('fid1a_v179.ch'));
-    expect(c.version).toBe('179');
-    expect(c.sampleId).toBe('SAMPLE-2');
-    expect(c.operator).toBe('operator');
-    expect(c.times.length).toBe(72_987);
-    const last = c.times[c.times.length - 1];
-    expect(last).toBeGreaterThan(120);
-    expect(last).toBeLessThan(125);
+    const c = parseCh(fixture('synthetic-fid-v179.ch'));
+    expect(c).toMatchObject({ version: '179', unverified: false, sampleId: 'SYNTHETIC-FID-2', method: 'SYNTH179.M' });
+    expect(c.times.length).toBe(13_501);
+    expect(c.times[c.times.length - 1]).toBeCloseTo(45, 6);
     assertAscending(c.times);
-    const base = median(c.signal);
-    expect(base).toBeGreaterThan(1000);
-    expect(base).toBeLessThan(100_000);
+    expect(valueAt(c, 0.5)).toBeGreaterThan(1850);
+    expect(valueAt(c, 0.5)).toBeLessThan(2200);
     expect(c.signal.every(Number.isFinite)).toBe(true);
-  });
-
-  it('parses the real-data v179 file', () => {
-    const c = parseCh(fixture('realdata/fid1a.ch'));
-    expect(c.version).toBe('179');
-    expect(c.sampleId).toBe('SAMPLE-3');
-    expect(c.times[c.times.length - 1]).toBeCloseTo(113.985, 2);
   });
 
   it('rejects unknown versions and truncated files', () => {
@@ -62,11 +59,11 @@ describe('parseCh', () => {
     bad[1] = '9'.charCodeAt(0);
     bad[2] = '9'.charCodeAt(0);
     expect(() => parseCh(bad)).toThrow(/Unsupported .ch version '99'/);
-    expect(() => parseCh(fixture('fid1a.ch').slice(0, 100))).toThrow(/too short/);
+    expect(() => parseCh(fixture('synthetic-fid.ch').slice(0, 100))).toThrow(/too short/);
   });
 
   it('decodes single-delta streams with absolute resets', () => {
-    // Synthetic v30 file: legacy layout, data at 0x400, delta encoding.
+    // Minimal v30 file: legacy layout, data at 0x400, delta encoding.
     const buf = new Uint8Array(0x400 + 14);
     const view = new DataView(buf.buffer);
     buf[0] = 2;

@@ -8,8 +8,8 @@ import { Chromatogram, type ChromatogramHandle } from '../src/index.js';
 // Vitest runs with the package directory as cwd; jsdom's import.meta.url is not a file URL.
 const fixture = (name: string) => new Uint8Array(readFileSync(resolve(process.cwd(), '../core/test/fixtures', name)));
 
-const fid = fixture('fid1a.ch');
-const fidLabels = fixture('fid1a.prc');
+const fid = fixture('synthetic-fid.ch');
+const fidLabels = fixture('synthetic-fid.prc');
 
 afterEach(() => {
   cleanup();
@@ -20,13 +20,13 @@ describe('<Chromatogram>', () => {
   it('renders an SVG with peak labels from file bytes', async () => {
     const onRender = vi.fn();
     const { container } = render(
-      <Chromatogram data={fid} labels={fidLabels} timeRange={[5, 105]} onRender={onRender} />,
+      <Chromatogram data={fid} labels={fidLabels} timeRange={[2, 58]} onRender={onRender} />,
     );
     await waitFor(() => expect(container.querySelector('svg')).not.toBeNull());
-    expect(container.textContent).toContain('SAMPLE-1');
-    expect(container.textContent).toContain('nC7');
+    expect(container.textContent).toContain('SYNTHETIC-FID-1');
+    expect(container.textContent).toContain('nC13');
     expect(onRender).toHaveBeenCalledTimes(1);
-    expect(onRender.mock.calls[0][0].peaks.length).toBeGreaterThan(50);
+    expect(onRender.mock.calls[0][0].peaks.length).toBe(31);
   });
 
   it('gives each instance its own clip-path id', async () => {
@@ -42,14 +42,14 @@ describe('<Chromatogram>', () => {
   });
 
   it('accepts a URL and plots the requested ions of an .ms file', async () => {
-    const ms = fixture('realdata/data.ms');
+    const ms = fixture('synthetic.ms');
     vi.spyOn(globalThis, 'fetch').mockImplementation(async () => new Response(ms));
     const onRender = vi.fn();
-    render(<Chromatogram data="/samples/data.ms" ions="191" onRender={onRender} />);
+    render(<Chromatogram data="/samples/synthetic.ms" ions="191" onRender={onRender} />);
     await waitFor(() => expect(onRender).toHaveBeenCalled());
-    expect(fetch).toHaveBeenCalledWith('/samples/data.ms', expect.anything());
+    expect(fetch).toHaveBeenCalledWith('/samples/synthetic.ms', expect.anything());
     expect(onRender.mock.calls[0][0].trace.label).toBe('Ion Mass: 191');
-    expect(onRender.mock.calls[0][0].dataFileName).toBe('data.ms');
+    expect(onRender.mock.calls[0][0].dataFileName).toBe('synthetic.ms');
   });
 
   it('shows an error and calls onError for an unreadable file', async () => {
@@ -73,7 +73,7 @@ describe('<Chromatogram>', () => {
     URL.createObjectURL = vi.fn(() => 'blob:x');
     URL.revokeObjectURL = vi.fn();
     const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) {
-      expect(this.download).toBe('SAMPLE-1.svg');
+      expect(this.download).toBe('SYNTHETIC-FID-1.svg');
     });
     act(() => {
       expect(ref.current!.exportSvg()).toBe(true);

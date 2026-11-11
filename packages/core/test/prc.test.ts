@@ -3,31 +3,25 @@ import { decodePrc, parsePrc } from '../src/parsers/prc.js';
 import { fixture } from './helpers.js';
 
 describe('parsePrc', () => {
-  it('parses fid1a.prc', () => {
-    const prc = decodePrc(fixture('fid1a.prc'));
-    expect(prc.sampleId).toBe('SAMPLE-1');
-    expect(prc.peaks.length).toBe(77);
-    const first = prc.peaks[0];
-    expect(first.name).toBe('iC8(ISTD)/224tm-C5');
-    expect(first.rt).toBeCloseTo(16.988, 3);
-    expect(first.ion).toBe(0);
-    expect(first.yStart).toBe(23402);
-    expect(first.xStart).toBeCloseTo(16.864, 3);
-    expect(first.xEnd).toBeCloseTo(17.68, 3);
-    expect(prc.peaks.filter((p) => p.name === 'nC7').length).toBe(1);
-    expect(prc.peaks.filter((p) => p.rt >= 3.5 && p.rt <= 13).length).toBeGreaterThan(3);
-    for (const p of prc.peaks) {
-      expect(p.area).toBeGreaterThanOrEqual(0);
-      expect(p.height).toBeGreaterThanOrEqual(0);
-    }
+  it('parses FID labels', () => {
+    const prc = decodePrc(fixture('synthetic-fid.prc'));
+    expect(prc.sampleId).toBe('SYNTHETIC-FID-1');
+    expect(prc.peaks.length).toBe(31);
+    expect(prc.peaks[0]).toMatchObject({ rt: 3, ion: 0, name: 'nC6', height: 77, yStart: 2, yEnd: 2 });
+    expect(prc.peaks[0].xStart).toBeCloseTo(2.905, 3);
+    expect(prc.peaks[0].xEnd).toBeCloseTo(3.095, 3);
+    expect(prc.peaks.filter((p) => p.name === 'nC13').length).toBe(1);
+    expect(prc.peaks.find((p) => p.name === 'ISTD')?.rt).toBe(11.7);
+    expect(prc.peaks.every((p) => p.ion === 0 && p.area > 0 && p.height > 0)).toBe(true);
   });
 
   it('parses MS ion peaks', () => {
-    const prc = decodePrc(fixture('realdata/data.prc'));
-    expect(prc.sampleId).toBe('SAMPLE-MS');
-    expect(prc.peaks.length).toBe(70);
-    expect(prc.peaks[0]).toMatchObject({ rt: 69.849, ion: 217, name: '24baa' });
-    expect(prc.peaks.every((p) => p.ion > 0)).toBe(true);
+    const prc = decodePrc(fixture('synthetic-ms.prc'));
+    expect(prc.sampleId).toBe('SYNTHETIC-MS-1');
+    expect(prc.peaks.length).toBe(16);
+    expect(prc.peaks[0]).toMatchObject({ rt: 52, ion: 217, name: 'D27S' });
+    expect(prc.peaks.filter((p) => p.ion === 191).length).toBe(10);
+    expect(prc.peaks.find((p) => p.name === 'H30')).toMatchObject({ rt: 67.1, ion: 191, height: 6000 });
   });
 
   it('skips malformed rows and blank lines', () => {

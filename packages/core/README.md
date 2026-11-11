@@ -16,13 +16,13 @@ npm install chromatogram-core
 ```ts
 import { decodePrc, parseDataFile, plotChromatogram } from 'chromatogram-core';
 
-const data = new Uint8Array(await (await fetch('/data/fid1a.ch')).arrayBuffer());
-const labels = new Uint8Array(await (await fetch('/data/fid1a.prc')).arrayBuffer());
+const data = new Uint8Array(await (await fetch('/data/synthetic-fid.ch')).arrayBuffer());
+const labels = new Uint8Array(await (await fetch('/data/synthetic-fid.prc')).arrayBuffer());
 
-const plot = plotChromatogram(parseDataFile(data, 'fid1a.ch'), decodePrc(labels), {
+const plot = plotChromatogram(parseDataFile(data, 'synthetic-fid.ch'), decodePrc(labels), {
   timeStart: 5,
   timeEnd: 105,
-  fileName: 'fid1a.ch',
+  fileName: 'synthetic-fid.ch',
 });
 
 document.querySelector('#plot')!.innerHTML = plot.svg;
@@ -38,8 +38,8 @@ In Node:
 import { readFileSync, writeFileSync } from 'node:fs';
 import { parseDataFile, plotChromatogram } from 'chromatogram-core';
 
-const plot = plotChromatogram(parseDataFile(readFileSync('data.ms')), null, { ions: '191' });
-writeFileSync('data-191.svg', plot.svg);
+const plot = plotChromatogram(parseDataFile(readFileSync('synthetic.ms')), null, { ions: '191' });
+writeFileSync('synthetic-191.svg', plot.svg);
 ```
 
 ### Export (browser)

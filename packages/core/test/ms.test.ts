@@ -3,46 +3,45 @@ import { parseMs } from '../src/parsers/ms.js';
 import { filterPeaks, parseIonList, sumIons, totalIonChromatogram } from '../src/model.js';
 import { fixture } from './helpers.js';
 
-function abundanceNear(scan: { mz: Float64Array; abundance: Float64Array }, mz: number): number {
-  let s = 0;
-  scan.mz.forEach((m, i) => {
-    if (Math.abs(m - mz) <= 0.5) s += scan.abundance[i];
-  });
-  return s;
-}
+// synthetic.ms (scripts/generate-samples.mjs): 10–90 min, one scan per second, 8 ions per scan.
+// m/z 191 has its largest peak (H30, height 6000) at 67.1 min.
+
+const argmax = (a: Float64Array) => a.reduce((best, v, i) => (v > a[best] ? i : best), 0);
 
 describe('parseMs', () => {
-  it('parses header and scans of data.ms', () => {
-    const ms = parseMs(fixture('data.ms'));
-    expect(ms.operator).toBe('operator');
-    expect(ms.instrument).toBe('MSD');
-    expect(ms.scans.length).toBe(3807);
-    expect(ms.scans[0].rt).toBeCloseTo(9.0351, 3);
-    expect(ms.scans[ms.scans.length - 1].rt).toBeCloseTo(74.9915, 2);
-    expect(abundanceNear(ms.scans[0], 105)).toBe(467);
-    expect(abundanceNear(ms.scans[0], 192)).toBe(104);
+  it('parses the header and scans', () => {
+    const ms = parseMs(fixture('synthetic.ms'));
+    expect(ms).toMatchObject({ sampleId: 'SYNTHETIC-MS-1', operator: 'synthetic', instrument: 'MSD' });
+    expect(ms.scans.length).toBe(4801);
+    expect(ms.scans[0].rt).toBe(10);
+    expect(ms.scans[ms.scans.length - 1].rt).toBeCloseTo(90, 6);
+    expect(Array.from(ms.scans[0].mz)).toEqual([57, 71, 85, 105, 191, 217, 218, 231]);
     for (let i = 1; i < ms.scans.length; i++) {
-      expect(ms.scans[i].rt).toBeGreaterThanOrEqual(ms.scans[i - 1].rt);
+      expect(ms.scans[i].rt).toBeGreaterThan(ms.scans[i - 1].rt);
     }
   });
 
   it('builds TIC and EIC traces', () => {
-    const ms = parseMs(fixture('realdata/data.ms'));
-    expect(ms.scans.length).toBe(10_981);
+    const ms = parseMs(fixture('synthetic.ms'));
     const tic = totalIonChromatogram(ms);
     expect(tic.times.length).toBe(ms.scans.length);
-    expect(tic.signal.every((v) => v >= 0)).toBe(true);
+    expect(tic.signal[0]).toBe(ms.scans[0].abundance.reduce((s, v) => s + v, 0));
+
     const eic = sumIons(ms, [191]);
-    expect(eic.times.length).toBe(ms.scans.length);
-    expect(Math.max(...eic.signal)).toBeGreaterThan(0);
+    const top = argmax(eic.signal);
+    expect(eic.times[top]).toBeCloseTo(67.1, 1);
+    expect(eic.signal[top]).toBeGreaterThan(6000);
+    expect(eic.signal[top]).toBeLessThan(6100);
+
     const both = sumIons(ms, [191, 217]);
-    for (let i = 0; i < both.signal.length; i += 500) {
-      expect(both.signal[i]).toBeGreaterThanOrEqual(eic.signal[i]);
+    const steranes = sumIons(ms, [217]);
+    for (let i = 0; i < both.signal.length; i += 250) {
+      expect(both.signal[i]).toBe(eic.signal[i] + steranes.signal[i]);
     }
   });
 
   it('rejects non-MS input', () => {
-    expect(() => parseMs(fixture('fid1a.ch'))).toThrow(/Unsupported .ms version/);
+    expect(() => parseMs(fixture('synthetic-fid.ch'))).toThrow(/Unsupported .ms version/);
     expect(() => parseMs(new Uint8Array(10))).toThrow(/too short/);
   });
 });
