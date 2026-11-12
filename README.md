@@ -50,13 +50,15 @@ To try the viewer without your own data, click **FID** or **MS** under *Examples
 | Label file | Optional `.prc`. FID plots use ion 0 peaks. MS plots use peaks whose ion matches the selected m/z. If nothing matches, every peak is shown. |
 | From / To | Time window in minutes. Leave both blank (or click **Full run**) to show the whole run. |
 | Ions | Only for `.ms` files. Leave blank for the total ion chromatogram (TIC). `191` gives an extracted ion chromatogram. `191+217` sums several ions (±0.5 m/z). |
-| Display | Title, peak labels, retention time in the labels, peak baselines, grid, label size, line width, and output size in pixels. |
+| Display | Title, peak labels, label stacking, retention time in the labels, peak baselines, grid, label size, line width, and output size in pixels. |
 | Export SVG | Downloads exactly what is on screen as a standalone SVG. Text stays as real `<text>` elements. |
 | Export PNG | Rasterises the same SVG at 2× the output size (e.g. 2400×1500 for 1200×750) on a white background. Very large outputs are scaled down to stay within browser canvas limits. |
 
-Peak labels are rotated and rise from the highest plotted point inside each peak's integration
-window. Labels that would overlap a neighbouring label or cut through a taller nearby peak are
-lifted. The y-axis is extended so that every label fits.
+Peak labels are rotated and sit straight above the highest plotted point inside each peak's
+integration window, even when that makes labels in dense clusters overlap. The "Stack
+overlapping labels" option (`labelLayout: 'stacked'`) restores the alternative layout: labels
+that would overlap a neighbouring label or cut through a taller nearby peak are lifted. In both
+layouts the y-axis is extended just enough for the highest label to fit.
 
 ## Supported formats
 

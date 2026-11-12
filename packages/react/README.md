@@ -95,6 +95,7 @@ The wrapper `<div>` has `data-status="idle" | "loading" | "ready" | "error"` for
 | `timeRange` | `[number \| null, number \| null]` | whole run | Minutes. Same as `timeStart`/`timeEnd`. |
 | `title` / `subtitle` | `string` | sample ID / date · file · trace | Pass `""` to hide. |
 | `showLabels` | `boolean` | `true` | Peak labels. |
+| `labelLayout` | `'apex' \| 'stacked'` | `'apex'` | `'apex'` puts each label straight above its own peak (labels may overlap in dense clusters); `'stacked'` lifts overlapping labels above each other. |
 | `showRetentionTimes` | `boolean` | `false` | Adds the retention time to each label. |
 | `showBaselines` | `boolean` | `false` | Draws each peak's integration baseline. |
 | `showGrid` | `boolean` | `true` | |

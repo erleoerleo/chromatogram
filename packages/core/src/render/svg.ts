@@ -8,6 +8,11 @@ export interface PlotOptions {
   /** Window end in minutes; null = end of data. */
   timeEnd: number | null;
   showLabels: boolean;
+  /**
+   * `'apex'` puts every label straight above its own peak apex (labels may overlap);
+   * `'stacked'` lifts labels above taller neighbours and stacks them to avoid overlaps.
+   */
+  labelLayout: LabelLayout;
   showRetentionTimes: boolean;
   showBaselines: boolean;
   showGrid: boolean;
@@ -20,10 +25,13 @@ export interface PlotOptions {
   subtitle: string;
 }
 
+export type LabelLayout = 'apex' | 'stacked';
+
 export const DEFAULT_OPTIONS: PlotOptions = {
   timeStart: null,
   timeEnd: null,
   showLabels: true,
+  labelLayout: 'apex',
   showRetentionTimes: false,
   showBaselines: false,
   showGrid: true,
@@ -67,6 +75,17 @@ export function labelText(peak: Peak, withRt: boolean): string {
   return withRt ? `${peak.rt.toFixed(3)}  ${peak.name}` : peak.name;
 }
 
+type LabelItem = { peak: Peak; text: string; time: number; value: number };
+
+/** Places each rotated label straight above its own apex, ignoring neighbours (labels may overlap). */
+export function layoutLabelsAtApex(items: LabelItem[], xs: LinearScale, ys: LinearScale, fontSize: number): PlacedLabel[] {
+  return items.map((item) => {
+    const bottom = ys(item.value) - LABEL_GAP_PX;
+    const length = item.text.length * fontSize * CHAR_WIDTH;
+    return { peak: item.peak, text: item.text, x: xs(item.time), bottom, top: bottom - length };
+  });
+}
+
 /**
  * Places rotated labels rising from each apex. A label starts above the highest point of the
  * trace across its own thickness (so it never cuts through a neighbouring taller peak) and is
@@ -75,7 +94,7 @@ export function labelText(peak: Peak, withRt: boolean): string {
  * @param traceTop optional pixel y of the highest trace point between two pixel x positions
  */
 export function layoutLabels(
-  items: { peak: Peak; text: string; time: number; value: number }[],
+  items: LabelItem[],
   xs: LinearScale,
   ys: LinearScale,
   fontSize: number,
@@ -156,7 +175,7 @@ export function renderSvg(chrom: Chromatogram, peaks: Peak[], options: Partial<P
       })
       .sort((a, b) => a.time - b.time);
 
-    // Widen the y-axis until the tallest label stack fits inside the plot area.
+    // Widen the y-axis until the highest label fits inside the plot area.
     const traceTop = (xFrom: number, xTo: number) => {
       const a = Math.max(indexAtOrAfter(chrom.times, xs.invert(xFrom)), i0);
       const b = Math.min(indexAtOrBefore(chrom.times, xs.invert(xTo)), i1);
@@ -165,7 +184,10 @@ export function renderSvg(chrom: Chromatogram, peaks: Peak[], options: Partial<P
       return max === -Infinity ? Infinity : ys(max);
     };
     for (let iter = 0; iter < 16; iter++) {
-      labels = layoutLabels(items, xs, ys, o.labelFontSize, traceTop);
+      labels =
+        o.labelLayout === 'stacked'
+          ? layoutLabels(items, xs, ys, o.labelFontSize, traceTop)
+          : layoutLabelsAtApex(items, xs, ys, o.labelFontSize);
       const minTop = labels.reduce((m, l) => Math.min(m, l.top), Infinity);
       const deficit = top + 4 - minTop;
       if (!(deficit > 0.5) || yHigh - yLow > range * 50) break;

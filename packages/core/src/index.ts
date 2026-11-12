@@ -10,7 +10,7 @@ export {
 export { parseCh } from './parsers/ch.js';
 export { parseMs } from './parsers/ms.js';
 export { decodePrc, parsePrc } from './parsers/prc.js';
-export { DEFAULT_OPTIONS, renderSvg, type PlotOptions } from './render/svg.js';
+export { DEFAULT_OPTIONS, renderSvg, type LabelLayout, type PlotOptions } from './render/svg.js';
 export {
   detectFormat,
   parseDataFile,

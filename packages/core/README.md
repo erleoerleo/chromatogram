@@ -32,6 +32,9 @@ console.log(plot.peaks.length, plot.warnings);
 For an `.ms` file, choose ions with `ions: [191]` or `ions: '191+217'`. Without ions you get
 the total ion chromatogram.
 
+Peak labels sit straight above their own peak apex by default (`labelLayout: 'apex'`) and may
+overlap in dense clusters. Pass `labelLayout: 'stacked'` to lift overlapping labels instead.
+
 In Node:
 
 ```ts

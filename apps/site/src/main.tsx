@@ -26,6 +26,7 @@ function App() {
   const [ions, setIons] = useState('');
   const [title, setTitle] = useState<string | null>(null); // null = use the sample ID
   const [showLabels, setShowLabels] = useState(true);
+  const [stackLabels, setStackLabels] = useState(false);
   const [showRt, setShowRt] = useState(false);
   const [showBaselines, setShowBaselines] = useState(false);
   const [showGrid, setShowGrid] = useState(true);
@@ -160,6 +161,7 @@ function App() {
               <input type="text" value={title ?? result?.data.sampleId ?? ''} onChange={(e) => setTitle(e.target.value)} />
             </Field>
             <Check label="Peak labels" checked={showLabels} onChange={setShowLabels} />
+            <Check label="Stack overlapping labels" checked={stackLabels} onChange={setStackLabels} />
             <Check label="Retention time in labels" checked={showRt} onChange={setShowRt} />
             <Check label="Peak baselines" checked={showBaselines} onChange={setShowBaselines} />
             <Check label="Grid" checked={showGrid} onChange={setShowGrid} />
@@ -200,6 +202,7 @@ function App() {
                 timeRange={[numberOrNull(tStart), numberOrNull(tEnd)]}
                 title={title ?? undefined}
                 showLabels={showLabels}
+                labelLayout={stackLabels ? 'stacked' : 'apex'}
                 showRetentionTimes={showRt}
                 showBaselines={showBaselines}
                 showGrid={showGrid}
